@@ -15,21 +15,23 @@ class node_cluster(Node):
         super().__init__('node_cluster')
         self.subscription = self.create_subscription(
             LaserScan,
-            'scan',
+            '/scan',
             self.obstacle_detect_callback,
             1)
         
         self.publisher_ = self.create_publisher(
             MarkerArray, 
-            'plante', 
+            '/plante', 
             10)
         
         self.publisher_obstacle = self.create_publisher(
             Obstacles,
-            'obstacle',
+            '/obstacle',
             10)
 
         self.subscription  
+
+        self.marge = 0.2
 
     def coordonnee_point(self, i, msg : LaserScan):
         theta_min = msg.angle_min
@@ -130,7 +132,7 @@ class node_cluster(Node):
 
         for i in range(len(liste_obstacles)):
             taille_obstacle = self.distance(liste_obstacles[i][0], liste_obstacles[i][1], msg)
-            if taille_obstacle < 0.05:
+            if taille_obstacle < self.marge :
                 coordonnee_plante.append(self.coordonnee_cercle(liste_obstacles[i], msg))
                 radius_plante.append(taille_obstacle*np.sqrt(3)/3)
 
@@ -170,7 +172,7 @@ class node_cluster(Node):
             segment.last_point.y = coordonnee_segment[i][1][1]
             segment.index_first_point = liste_segment[i][0]
             segment.index_last_point = liste_segment[i][1]
-            obstacle.segments.append(segment)
+            obstacle.segments.append(segment)        
         self.publisher_obstacle.publish(obstacle)
 
 def main():
