@@ -1,4 +1,7 @@
-from setuptools import find_packages, setup
+from setuptools import find_packages, setup, SetuptoolsDeprecationWarning
+import warnings
+
+warnings.filterwarnings("ignore", category=SetuptoolsDeprecationWarning)
 
 package_name = 'obj_detector'
 
