@@ -8,30 +8,49 @@ import obj_detector.trigo as trigo
 from geometry_msgs.msg import Point
 from cdf_msgs.msg import Obstacles, CircleObstacle, SegmentObstacle
 
-bon_point = list(range(170, 450)) + list(range(770, 1055)) + list(range(1380, 1660))  #143, 489, 735, 1091, 1333, 1693 #170, 480, 770, 1055, 1350, 1660
+#bon_point = list(range(170, 450)) + list(range(770, 1055)) + list(range(1380, 1660))  #143, 489, 735, 1091, 1333, 1693 #170, 480, 770, 1055, 1350, 1660
+bon_point = list(range(1798))
 
 class node_cluster(Node):
     def __init__(self):
         super().__init__('node_cluster')
-        self.subscription = self.create_subscription(
-            LaserScan,
-            '/scan',
-            self.obstacle_detect_callback,
-            1)
-        
+        self._init_parameters()
+        self._init_publishers() 
+        self._init_subscribers()
+        self.marge = 0.2
+
+    def _init_parameters(self):
+        self.declare_parameters(
+            namespace="",
+            parameters=[
+                ("top_scan_topic", "top_lidar/scan"),
+                ("bottom_scan_topic", "bottom_lidar/scan"),
+                ("object_topic", "obstacle"),
+                ("object_display_topic", "object_display"),
+            ],
+        )
+
+    def _init_publishers(self):
+        self.object_display_topic = self.get_parameter("object_display_topic").get_parameter_value().string_value
         self.publisher_ = self.create_publisher(
             MarkerArray, 
-            '/plante', 
+            self.object_display_topic,
             10)
-        
+
+        self.object_topic = self.get_parameter("object_topic").get_parameter_value().string_value
         self.publisher_obstacle = self.create_publisher(
             Obstacles,
-            '/obstacle',
+            self.object_topic,
             10)
 
-        self.subscription  
-
-        self.marge = 0.2
+    def _init_subscribers(self):
+        self.scan_topic = self.get_parameter("top_scan_topic").get_parameter_value().string_value
+        self.subscription = self.create_subscription(
+            LaserScan,
+            self.scan_topic,
+            self.obstacle_detect_callback,
+            1)
+        self.subscription
 
     def coordonnee_point(self, i, msg : LaserScan):
         theta_min = msg.angle_min
@@ -109,21 +128,24 @@ class node_cluster(Node):
         liste_segment = []
         
         for k in bon_point:
-            if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' :
-                liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
-                points_obstacles = []
+            try :
+                if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' :
+                    liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
+                    points_obstacles = []
 
-            elif k+1 not in bon_point:
-                liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
-                points_obstacles = []
+                elif k+1 not in bon_point:
+                    liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
+                    points_obstacles = []
 
-            elif np.abs(float(msg.ranges[k]) - float(msg.ranges[k+1])) < 0.05:
-                points_obstacles.append(k)
+                elif np.abs(float(msg.ranges[k]) - float(msg.ranges[k+1])) < 0.05:
+                    points_obstacles.append(k)
 
-            else : 
-                coordonnee_mesure.append(self.coordonnee_point(k, msg))
-                liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
-                points_obstacles = []
+                else : 
+                    coordonnee_mesure.append(self.coordonnee_point(k, msg))
+                    liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
+                    points_obstacles = []
+            except:
+                self.get_logger().info(f'k = {len(msg.ranges)}')
         
         liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
 
