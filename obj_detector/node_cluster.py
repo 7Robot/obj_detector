@@ -23,12 +23,13 @@ class node_cluster(Node):
         self.declare_parameters(
             namespace="",
             parameters=[
-                ("top_scan_topic", "top_lidar/scan"),
-                ("bottom_scan_topic", "bottom_lidar/scan"),
+                ("scan_topic", "top_lidar/scan"),
                 ("object_topic", "obstacle"),
                 ("object_display_topic", "object_display"),
+                ("place", "haut")
             ],
         )
+        self.get_logger().info(f'Parameters: {self.get_parameters(["scan_topic", "object_topic", "object_display_topic", "place"])}')
 
     def _init_publishers(self):
         self.object_display_topic = self.get_parameter("object_display_topic").get_parameter_value().string_value
@@ -44,7 +45,7 @@ class node_cluster(Node):
             10)
 
     def _init_subscribers(self):
-        self.scan_topic = self.get_parameter("top_scan_topic").get_parameter_value().string_value
+        self.scan_topic = self.get_parameter("scan_topic").get_parameter_value().string_value
         self.subscription = self.create_subscription(
             LaserScan,
             self.scan_topic,
