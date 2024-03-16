@@ -23,9 +23,11 @@ class node_cluster(Node):
             self.marge = 0.15
 
         else :
-            self.bon_point = list(range(170, 450)) + list(range(770, 1055)) + list(range(1380, 1660))
-            self.angle_correction = -1.8326  # -105°
-            self.rotation_correction = -1
+            self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
+            self.angle_correction = -np.pi/3  # -105°
+            #self.rotation_correction = -1
+            #self.angle_correction = 0
+            self.rotation_correction = 1
             self.marge = 0.06
 
     def _init_parameters(self):
@@ -38,7 +40,7 @@ class node_cluster(Node):
                 ("place", "haut")
             ],
         )
-        self.get_logger().info(f'Parameters: {self.get_parameters(["scan_topic", "object_topic", "object_display_topic", "place"])}')
+        #self.get_logger().info(f'Parameters: {self.get_parameters(["scan_topic", "object_topic", "object_display_topic", "place"])}')
         self.get_logger().info(f'Place: {self.get_parameter("place").get_parameter_value().string_value}')
 
     def _init_publishers(self):
@@ -64,18 +66,20 @@ class node_cluster(Node):
         self.subscription
 
     def coordonnee_point(self, i, msg : LaserScan):
-        theta_min = msg.angle_min
+        theta_min = msg.angle_min + self.angle_correction
         delta_theta = msg.angle_increment
-        return [np.cos(i*delta_theta+theta_min)*float(msg.ranges[i]), np.sin(i*delta_theta+theta_min)*float(msg.ranges[i])]
+        return [np.cos(self.rotation_correction*(i*delta_theta+theta_min))*float(msg.ranges[i]), 
+                np.sin(self.rotation_correction*(i*delta_theta+theta_min))*float(msg.ranges[i])]
 
     def coordonnee_cercle(self, segment, msg:LaserScan):
-        theta_min = msg.angle_min
+        theta_min = msg.angle_min + self.angle_correction
         delta_theta = msg.angle_increment
 
         point_milieu = int((segment[1]-segment[0])/2)+segment[0]
         longueur = self.distance(segment[0], segment[1], msg)
         dist = msg.ranges[point_milieu]+np.sqrt(3)*longueur/2
-        return [np.cos(point_milieu*delta_theta+theta_min)*dist, np.sin(point_milieu*delta_theta+theta_min)*dist]
+        return [np.cos(self.rotation_correction*(point_milieu*delta_theta)-theta_min)*dist,
+                np.sin(self.rotation_correction*(point_milieu*delta_theta)-theta_min)*dist]
 
     
     def distance(self, i, j, msg : LaserScan):
@@ -143,6 +147,7 @@ class node_cluster(Node):
                 if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' :
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
                     points_obstacles = []
+                    #self.get_logger().warn(f'Inf detected at {k} and {k+1}.')
 
                 elif k+1 not in self.bon_point:
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
@@ -168,6 +173,9 @@ class node_cluster(Node):
             if taille_obstacle < self.marge :
                 coordonnee_plante.append(self.coordonnee_cercle(liste_obstacles[i], msg))
                 radius_plante.append(taille_obstacle*np.sqrt(3)/3)
+
+                #if self.place == "bas":
+                #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[-1]}')
 
             else :
                 segment_temp = self.traitement_segment(liste_obstacles[i],msg)
