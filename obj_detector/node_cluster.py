@@ -30,6 +30,7 @@ class node_cluster(Node):
             ],
         )
         self.get_logger().info(f'Parameters: {self.get_parameters(["scan_topic", "object_topic", "object_display_topic", "place"])}')
+        self.get_logger().info(f'Place: {self.get_parameter("place").get_parameter_value().string_value}')
 
     def _init_publishers(self):
         self.object_display_topic = self.get_parameter("object_display_topic").get_parameter_value().string_value
