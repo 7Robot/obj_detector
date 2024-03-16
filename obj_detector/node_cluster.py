@@ -8,16 +8,25 @@ import obj_detector.trigo as trigo
 from geometry_msgs.msg import Point
 from cdf_msgs.msg import Obstacles, CircleObstacle, SegmentObstacle
 
-#bon_point = list(range(170, 450)) + list(range(770, 1055)) + list(range(1380, 1660))  #143, 489, 735, 1091, 1333, 1693 #170, 480, 770, 1055, 1350, 1660
-bon_point = list(range(1798))
-
 class node_cluster(Node):
     def __init__(self):
         super().__init__('node_cluster')
         self._init_parameters()
         self._init_publishers() 
         self._init_subscribers()
-        self.marge = 0.2
+        self.place = self.get_parameter("place").get_parameter_value().string_value
+
+        if self.place == "haut":
+            self.bon_point = list(range(1798))
+            self.angle_correction = np.pi/2
+            self.rotation_correction = 1
+            self.marge = 0.15
+
+        else :
+            self.bon_point = list(range(170, 450)) + list(range(770, 1055)) + list(range(1380, 1660))
+            self.angle_correction = -1.8326  # -105°
+            self.rotation_correction = -1
+            self.marge = 0.06
 
     def _init_parameters(self):
         self.declare_parameters(
@@ -129,13 +138,13 @@ class node_cluster(Node):
         coordonnee_mesure_debug = []
         liste_segment = []
         
-        for k in bon_point:
+        for k in self.bon_point:
             try :
                 if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' :
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
                     points_obstacles = []
 
-                elif k+1 not in bon_point:
+                elif k+1 not in self.bon_point:
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
                     points_obstacles = []
 
@@ -147,7 +156,7 @@ class node_cluster(Node):
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
                     points_obstacles = []
             except:
-                self.get_logger().info(f'k = {len(msg.ranges)}')
+                self.get_logger().warn(f'{number_of_points} points dans le scan.')
         
         liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
 
