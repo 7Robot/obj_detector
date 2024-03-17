@@ -18,7 +18,7 @@ class node_cluster(Node):
 
         if self.place == "haut":
             self.bon_point = list(range(1798))
-            self.angle_correction = 0 # np.pi/2
+            self.angle_correction = - np.pi/2
             self.rotation_correction = 1
             self.marge = 0.15
             
@@ -213,7 +213,7 @@ class node_cluster(Node):
             segment.last_point.y = coordonnee_segment[i][1][1]
             segment.index_first_point = liste_segment[i][0]
             segment.index_last_point = liste_segment[i][1]
-            obstacle.segments.append(segment)        
+            obstacle.segments.append(segment)
         self.publisher_obstacle.publish(obstacle)
 
 def main():
