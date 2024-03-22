@@ -25,7 +25,10 @@ def calc_alpha(segment,msg:LaserScan):
     return alpha
 
 def calc_theta_bis(segment,theta,msg:LaserScan):
-    return calc_alpha(segment,msg) - theta - np.pi/2
+    return np.arccos(cos_alpha(segment,msg)) - theta - np.pi/2
+
+def calc_rref(i,theta_bis,msg:LaserScan):
+     return float(msg.ranges[i])*np.cos(theta_bis)
 
 def cos_alpha(segment,msg:LaserScan):
     delta_theta = msg.angle_increment
