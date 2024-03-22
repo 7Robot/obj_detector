@@ -21,8 +21,8 @@ class node_cluster(Node):
             self.angle_correction = - np.pi/2
             self.rotation_correction = 1
             self.marge = 0.15
-            
-        else :
+        
+        elif self.place == "bas":
             self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
             self.angle_correction = -np.pi/3  # -105°
             #self.rotation_correction = -1
@@ -30,14 +30,21 @@ class node_cluster(Node):
             self.rotation_correction = 1
             self.marge = 0.06
 
+        else :
+            self.get_logger().warn(f'Mode debug activé.')
+            self.bon_point = list(range(1798))
+            self.angle_correction = 0
+            self.rotation_correction = 1
+            self.marge = 0.15
+
     def _init_parameters(self):
         self.declare_parameters(
             namespace="",
             parameters=[
-                ("scan_topic", "top_lidar/scan"),
+                ("scan_topic", "/scan"),
                 ("object_topic", "obstacle"),
                 ("object_display_topic", "object_display"),
-                ("place", "haut")
+                ("place", "debug")
             ],
         )
         #self.get_logger().info(f'Parameters: {self.get_parameters(["scan_topic", "object_topic", "object_display_topic", "place"])}')
