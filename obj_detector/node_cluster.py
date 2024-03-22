@@ -32,10 +32,10 @@ class node_cluster(Node):
 
         else :
             self.get_logger().warn(f'Mode debug activé.')
-            self.bon_point = list(range(1798))
+            self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
             self.angle_correction = 0
             self.rotation_correction = 1
-            self.marge = 0.15
+            self.marge = 0.06
 
     def _init_parameters(self):
         self.declare_parameters(
