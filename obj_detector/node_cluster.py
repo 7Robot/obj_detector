@@ -18,13 +18,13 @@ class node_cluster(Node):
 
         if self.place == "haut":
             self.bon_point = list(range(1798))
-            self.angle_correction = - np.pi/2
+            self.angle_correction = 0 #- np.pi/2
             self.rotation_correction = 1
             self.marge = 0.15
         
         elif self.place == "bas":
             self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
-            self.angle_correction = -np.pi/3  # -105°
+            self.angle_correction = 0 #-np.pi/3  # -105°
             #self.rotation_correction = -1
             #self.angle_correction = 0
             self.rotation_correction = 1
@@ -32,7 +32,9 @@ class node_cluster(Node):
 
         else :
             self.get_logger().warn(f'Mode debug activé.')
-            self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
+            #self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
+            self.bon_point = list(range(1798))
+            
             self.angle_correction = 0
             self.rotation_correction = 1
             self.marge = 0.06
