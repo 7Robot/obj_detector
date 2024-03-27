@@ -33,21 +33,25 @@ class WallLocalisation(Node):
                 liste_segment.append([segment_temp[0],segment_temp[1]])
         self.get_logger().info(f'segments : {liste_segment}')
 
-        for k in list(range(len(liste_segment)-1)) :
-            nb_point_1 = liste_segment[k][1]-liste_segment[k][0]
-            theta_1 = nb_point_1*self.message_Lidar.angle_increment
-            theta_bis_1 = trigo.calc_theta_bis(liste_segment[k],theta_1,self.message_Lidar)
-            theta_ref_1 = theta_bis_1 + self.message_Lidar.angle_increment*liste_segment[k][0]
-            nb_point_2 = liste_segment[k+1][1]-liste_segment[k+1][0]
-            theta_2 = nb_point_2*self.message_Lidar.angle_increment
-            theta_bis_2 = trigo.calc_theta_bis(liste_segment[k+1],theta_2,self.message_Lidar)
-            theta_ref_2 = theta_bis_2 + self.message_Lidar.angle_increment*liste_segment[k+1][0]
-            if np.abs(theta_ref_2 - theta_ref_1) > 0.7 :
-                segment_perpendiculaire = [liste_segment[k],liste_segment[k+1]]
-                rref1 = trigo.calc_rref(segment_perpendiculaire[0][0],theta_bis_1,self.message_Lidar)
-                rref2 = trigo.calc_rref(segment_perpendiculaire[1][0],theta_bis_2,self.message_Lidar)
-                self.get_logger().info(f'segment perpendiculaire : {segment_perpendiculaire}')
-                self.get_logger().info(f'rref1 : {rref1} and rref2 : {rref2}')
+        theta_ex = []
+        rref = []
+        A = []
+        B = []
+
+        for k in list(range(len(liste_segment))) :
+            theta_ex.append(trigo.cacl_theta_ex(liste_segment[k],
+                                                trigo.calc_theta_bis(liste_segment[k],trigo.calc_alpha(liste_segment[k],self.message_Lidar),self.message_Lidar),
+                                                self.message_Lidar))
+            rref.append(trigo.calc_rref(liste_segment[k][0],
+                                        trigo.calc_theta_bis(liste_segment[k],trigo.calc_alpha(liste_segment[k],self.message_Lidar),self.message_Lidar),
+                                        self.message_Lidar))
+            A_temp,B_temp = trigo.calc_pente(liste_segment[k],self.message_Lidar)
+            A.append(A_temp)
+            B.append(B_temp)
+        self.get_logger().info(f'theta_ex : {theta_ex}')
+        self.get_logger().info(f'rref : {rref}')
+        self.get_logger().info(f'A : {A}')
+        self.get_logger().info(f'B : {B}')
 
     def laser_callback(self, msg : LaserScan):
         self.message_Lidar = msg

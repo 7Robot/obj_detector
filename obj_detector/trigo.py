@@ -27,6 +27,9 @@ def calc_alpha(segment,msg:LaserScan):
 def calc_theta_bis(segment,theta,msg:LaserScan):
     return np.arccos(cos_alpha(segment,msg)) - theta - np.pi/2
 
+def cacl_theta_ex(segment,theta_bis,msg:LaserScan):
+     return msg.angle_increment*segment[1]+theta_bis
+
 def calc_rref(i,theta_bis,msg:LaserScan):
      return float(msg.ranges[i])*np.cos(theta_bis)
 
@@ -39,3 +42,18 @@ def cos_alpha(segment,msg:LaserScan):
     m1 = calc_m1(segment,msg)
     cosalpha = ((m1**2)+(r0**2)-(r1**2))/(2*m1*r0)
     return cosalpha
+
+def calc_pente(segment,msg:LaserScan):
+    x_B = float(msg.ranges[segment[0]])*np.cos(msg.angle_increment*segment[0])
+    y_B = float(msg.ranges[segment[0]])*np.sin(msg.angle_increment*segment[0])
+    theta_bis = calc_theta_bis(segment,calc_alpha(segment,msg),msg)
+    m_ref = calc_rref(segment[0],theta_bis,msg)
+    x_H = m_ref*np.cos(msg.angle_increment*segment[0])
+    y_H = m_ref*np.sin(msg.angle_increment*segment[0])
+    if x_H-x_B > 0.01 :
+        A = (y_H-y_B)/(x_H-x_B)
+        B = y_B - A*x_B
+    else :
+        A = 'cst'
+        B = x_B
+    return A,B
