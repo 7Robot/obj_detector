@@ -77,8 +77,8 @@ class node_cluster(Node):
     def coordonnee_point(self, i, msg : LaserScan):
         theta_min = msg.angle_min + self.angle_correction
         delta_theta = msg.angle_increment
-        return [np.cos(self.rotation_correction*(i*delta_theta)-theta_min)*float(msg.ranges[i]), 
-                np.sin(self.rotation_correction*(i*delta_theta)-theta_min)*float(msg.ranges[i])]
+        return [np.cos(self.rotation_correction*(i*delta_theta)+theta_min)*float(msg.ranges[i]), 
+                np.sin(self.rotation_correction*(i*delta_theta)+theta_min)*float(msg.ranges[i])]
 
     def coordonnee_cercle(self, segment, msg:LaserScan):
         theta_min = msg.angle_min + self.angle_correction
@@ -87,8 +87,8 @@ class node_cluster(Node):
         point_milieu = int((segment[1]-segment[0])/2)+segment[0]
         longueur = self.distance(segment[0], segment[1], msg)
         dist = msg.ranges[point_milieu]+np.sqrt(3)*longueur/2
-        return [np.cos(self.rotation_correction*(point_milieu*delta_theta)-theta_min)*dist,
-                np.sin(self.rotation_correction*(point_milieu*delta_theta)-theta_min)*dist]
+        return [np.cos(self.rotation_correction*(point_milieu*delta_theta)+theta_min)*dist,
+                np.sin(self.rotation_correction*(point_milieu*delta_theta)+theta_min)*dist]
 
     
     def distance(self, i, j, msg : LaserScan):

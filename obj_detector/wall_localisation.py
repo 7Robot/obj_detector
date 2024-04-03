@@ -8,17 +8,17 @@ import obj_detector.trigo as trigo
 
 import numpy as np
 
-class WallLocalisation(Node):
+class wall_localisation(Node):
     def __init__(self):
         super().__init__('wall_localisation')
         self.subscription = self.create_subscription(
             Obstacles,
-            'obstacle',
+            'bot_obstacle',
             self.wall_localisation_callback,
             1)
         self.subscription_laser = self.create_subscription(
             LaserScan,
-            'scan',
+            'bottom_lidar/scan',
             self.laser_callback,
             1)
         
@@ -31,36 +31,28 @@ class WallLocalisation(Node):
             segment_temp = [segment.index_first_point,segment.index_last_point]
             if trigo.distance(segment_temp[1],segment_temp[0],self.message_Lidar) > 0.2:
                 liste_segment.append([segment_temp[0],segment_temp[1]])
-        self.get_logger().info(f'segments : {liste_segment}')
+        #self.get_logger().info(f'segments : {liste_segment}')
 
-        theta_ex = []
-        rref = []
+        theta_ex_l = []
+        rref_l = []
         A = []
         B = []
 
         for k in list(range(len(liste_segment))) :
-            theta_ex.append(trigo.cacl_theta_ex(liste_segment[k],
-                                                trigo.calc_theta_bis(liste_segment[k],trigo.calc_alpha(liste_segment[k],self.message_Lidar),self.message_Lidar),
-                                                self.message_Lidar))
-            rref.append(trigo.calc_rref(liste_segment[k][0],
-                                        trigo.calc_theta_bis(liste_segment[k],trigo.calc_alpha(liste_segment[k],self.message_Lidar),self.message_Lidar),
-                                        self.message_Lidar))
             A_temp,B_temp = trigo.calc_pente(liste_segment[k],self.message_Lidar)
             A.append(A_temp)
             B.append(B_temp)
-        self.get_logger().info(f'theta_ex : {theta_ex}')
-        self.get_logger().info(f'rref : {rref}')
-        self.get_logger().info(f'A : {A}')
-        self.get_logger().info(f'B : {B}')
+        #self.get_logger().info(f'A : {A}')
+        #self.get_logger().info(f'B : {B}')
 
     def laser_callback(self, msg : LaserScan):
         self.message_Lidar = msg
 
 def main(args=None):
-    rclpy.init(args=args)
-    wall_localisation = WallLocalisation()
-    rclpy.spin(wall_localisation)
-    wall_localisation.destroy_node()
+    rclpy.init(args=None)
+    node = wall_localisation()
+    rclpy.spin(node)
+    node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
