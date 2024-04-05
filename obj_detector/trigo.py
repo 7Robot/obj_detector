@@ -52,7 +52,7 @@ def calc_pente(segment,msg:LaserScan):
     m_ref = calc_rref(segment[0],theta_bis,msg)
     x_H = m_ref*np.cos(theta_bis+msg.angle_min)
     y_H = m_ref*np.sin(theta_bis+msg.angle_min)
-    if np.abs(x_H-x_B) < 0.01 :
+    if np.abs(x_H-x_B) > 0.01 :
         A = (y_H-y_B)/(x_H-x_B)
         B = y_B - A*x_B
     else :
