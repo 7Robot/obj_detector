@@ -24,7 +24,7 @@ class node_cluster(Node):
         
         elif self.place == "bas":
             self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
-            self.angle_correction = 0 #-np.pi/3  # -105°
+            self.angle_correction = np.pi/4 #-np.pi/3  # -105°
             #self.rotation_correction = -1
             #self.angle_correction = 0
             self.rotation_correction = 1
@@ -211,6 +211,8 @@ class node_cluster(Node):
             circle = CircleObstacle()
             circle.center.x = coordonnee_plante[i][0]
             circle.center.y = coordonnee_plante[i][1]
+            if self.place == "bas":
+                self.get_logger().info(f'Plante détectée: {coordonnee_plante[i]}')
             circle.radius = radius_plante[i]
             obstacle.circles.append(circle)
 
