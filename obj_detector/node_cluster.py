@@ -7,6 +7,7 @@ import obj_detector.affichage as affichage
 import obj_detector.trigo as trigo 
 from geometry_msgs.msg import Point
 from cdf_msgs.msg import Obstacles, CircleObstacle, SegmentObstacle
+#import time 
 
 class node_cluster(Node):
     def __init__(self):
@@ -135,6 +136,7 @@ class node_cluster(Node):
             return liste_segment
 
     def obstacle_detect_callback(self, msg: LaserScan):
+        #start = time.time()
         number_of_points = len(msg.ranges)
         theta_min = msg.angle_min
         delta_theta = msg.angle_increment
@@ -153,7 +155,7 @@ class node_cluster(Node):
         
         for k in self.bon_point:
             try :
-                if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' :
+                if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' or float(msg.ranges[k]) > 3.8:
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
                     points_obstacles = []
                     #self.get_logger().warn(f'Inf detected at {k} and {k+1}.')
@@ -193,26 +195,26 @@ class node_cluster(Node):
                                               self.coordonnee_point(segment_temp[k][1], msg)])
                     liste_segment.append(segment_temp[k])
                 
-        marker_array_circle = affichage.affichage_plante(coordonnee_plante, radius_plante)
-        self.publisher_.publish(marker_array_circle)
+        #marker_array_circle = affichage.affichage_plante(coordonnee_plante, radius_plante)
+        #self.publisher_.publish(marker_array_circle)
 
-        marker_array_segment = affichage.affichage_segment(coordonnee_segment)
-        self.publisher_.publish(marker_array_segment)
+        #marker_array_segment = affichage.affichage_segment(coordonnee_segment)
+        #self.publisher_.publish(marker_array_segment)
 
         #marker_array_mesure = affichage.affichage_point(coordonnee_mesure)
         #self.publisher_.publish(marker_array_mesure)
 
         #marker_array_mesure = affichage.affichage_point_debug(coordonnee_mesure_debug)
-        marker_array_mesure = affichage.affichage_point_debug([[0.,0.]])
-        self.publisher_.publish(marker_array_mesure)        
+        #marker_array_mesure = affichage.affichage_point_debug([[0.,0.]])
+        #self.publisher_.publish(marker_array_mesure)        
 
         obstacle = Obstacles()
         for i in range(len(coordonnee_plante)):
             circle = CircleObstacle()
             circle.center.x = coordonnee_plante[i][0]
             circle.center.y = coordonnee_plante[i][1]
-            if self.place == "bas":
-                self.get_logger().info(f'Plante détectée: {coordonnee_plante[i]}')
+            #if self.place == "bas":
+            #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[i]}')
             circle.radius = radius_plante[i]
             obstacle.circles.append(circle)
 
@@ -226,6 +228,9 @@ class node_cluster(Node):
             segment.index_last_point = liste_segment[i][1]
             obstacle.segments.append(segment)
         self.publisher_obstacle.publish(obstacle)
+    
+        #end = time.time()
+        #self.get_logger().info(f'Time elapsed: {end-start} s.')
 
 def main():
     print('Hi from plante_detector.')
