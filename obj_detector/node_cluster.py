@@ -155,10 +155,10 @@ class node_cluster(Node):
         
         for k in self.bon_point:
             try :
-                if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' or float(msg.ranges[k]) > 3.8:
+                if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' or float(msg.ranges[k]) > 3.8 or float(msg.ranges[k+1]) > 3.8:
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
                     points_obstacles = []
-                    #self.get_logger().warn(f'Inf detected at {k} and {k+1}.')
+                    #self.get_logger().warn(f'Value not valid: {msg.ranges[k]} or {msg.ranges[k+1]}.')
 
                 elif k+1 not in self.bon_point:
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
@@ -195,11 +195,11 @@ class node_cluster(Node):
                                               self.coordonnee_point(segment_temp[k][1], msg)])
                     liste_segment.append(segment_temp[k])
                 
-        #marker_array_circle = affichage.affichage_plante(coordonnee_plante, radius_plante)
-        #self.publisher_.publish(marker_array_circle)
+        marker_array_circle = affichage.affichage_plante(coordonnee_plante, radius_plante)
+        self.publisher_.publish(marker_array_circle)
 
-        #marker_array_segment = affichage.affichage_segment(coordonnee_segment)
-        #self.publisher_.publish(marker_array_segment)
+        marker_array_segment = affichage.affichage_segment(coordonnee_segment)
+        self.publisher_.publish(marker_array_segment)
 
         #marker_array_mesure = affichage.affichage_point(coordonnee_mesure)
         #self.publisher_.publish(marker_array_mesure)
