@@ -30,7 +30,7 @@ def calc_theta_bis(segment,theta,msg:LaserScan):
     return np.arccos(cos_alpha(segment,msg)) - np.pi/2
 
 def cacl_theta_ex(segment,theta_bis,msg:LaserScan):
-     return msg.angle_increment*segment[1]+theta_bis
+     return msg.angle_increment*segment[1]+theta_bis+msg.angle_min
 
 def calc_rref(i,theta_bis,msg:LaserScan):
      return float(msg.ranges[i])*np.cos(theta_bis)

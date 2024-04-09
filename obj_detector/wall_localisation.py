@@ -34,6 +34,8 @@ class wall_localisation(Node):
         #self.get_logger().info(f'segments : {liste_segment}')
 
         rref_l = []
+        theta_ex_l = []
+        theta_bis_l = []
         A = []
         B = []
 
@@ -41,12 +43,17 @@ class wall_localisation(Node):
             A_temp,B_temp = trigo.calc_pente(liste_segment[k],self.message_Lidar)
             theta_bis_temp = trigo.calc_theta_bis(liste_segment[k],self.message_Lidar.angle_increment*np.abs(liste_segment[k][0]-liste_segment[k][1]),self.message_Lidar)
             rref_temp = trigo.calc_rref(liste_segment[k][0],theta_bis_temp,self.message_Lidar)
+            theta_ex_temp = trigo.cacl_theta_ex(liste_segment[k],theta_bis_temp,self.message_Lidar)
+            theta_ex_l.append(theta_ex_temp)
+            theta_bis_l.append(theta_bis_temp)
             rref_l.append(rref_temp)
             A.append(A_temp)
             B.append(B_temp)
         #self.get_logger().info(f'A : {A}')
         #self.get_logger().info(f'B : {B}')
         #self.get_logger().info(f'rref : {rref_l}')
+        #self.get_logger().info(f'theta_ex : {theta_ex_l}')
+        #self.get_logger().info(f'theta_bis : {theta_bis_l}')
 
     def laser_callback(self, msg : LaserScan):
         self.message_Lidar = msg
