@@ -19,7 +19,7 @@ class node_cluster(Node):
 
         if self.place == "haut":
             self.bon_point = list(range(1798))
-            self.angle_correction = 0 #- np.pi/2
+            self.angle_correction = 0 #np.pi/2
             self.rotation_correction = 1
             self.marge = 0.15
         
@@ -185,8 +185,10 @@ class node_cluster(Node):
                 coordonnee_plante.append(self.coordonnee_cercle(liste_obstacles[i], msg))
                 radius_plante.append(taille_obstacle*np.sqrt(3)/3)
 
-                #if self.place == "bas":
+                #if self.place == "haut":
                 #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[-1]}')
+                #    self.get_logger().info(f'Distance: {msg.ranges[int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]]}')
+                #    self.get_logger().info(f'Angle: {int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]}')
 
             else :
                 segment_temp = self.traitement_segment(liste_obstacles[i],msg)
