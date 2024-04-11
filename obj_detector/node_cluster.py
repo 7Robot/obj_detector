@@ -22,6 +22,7 @@ class node_cluster(Node):
             self.angle_correction = 0 #np.pi/2
             self.rotation_correction = 1
             self.marge = 0.15
+            self.longueur_cercle = 0.05
         
         elif self.place == "bas":
             self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
@@ -30,6 +31,7 @@ class node_cluster(Node):
             #self.angle_correction = 0
             self.rotation_correction = 1
             self.marge = 0.06
+            self.longueur_cercle = 0.025
 
         else :
             self.get_logger().warn(f'Mode debug activé.')
@@ -39,6 +41,7 @@ class node_cluster(Node):
             self.angle_correction = 0
             self.rotation_correction = 1
             self.marge = 0.06
+            self.longueur_cercle = 0.05
 
     def _init_parameters(self):
         self.declare_parameters(
@@ -86,8 +89,7 @@ class node_cluster(Node):
         delta_theta = msg.angle_increment
 
         point_milieu = int((segment[1]-segment[0])/2)+segment[0]
-        longueur = self.distance(segment[0], segment[1], msg)
-        dist = msg.ranges[point_milieu]+np.sqrt(3)*longueur/2
+        dist = msg.ranges[point_milieu]+np.sqrt(3)*self.longueur_cercle/2
         return [np.cos(self.rotation_correction*(point_milieu*delta_theta)+theta_min)*dist,
                 np.sin(self.rotation_correction*(point_milieu*delta_theta)+theta_min)*dist]
 
@@ -189,6 +191,7 @@ class node_cluster(Node):
                 #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[-1]}')
                 #    self.get_logger().info(f'Distance: {msg.ranges[int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]]}')
                 #    self.get_logger().info(f'Angle: {int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]}')
+                #    self.get_logger().info(f'Radius: {radius_plante[-1]}')
 
             else :
                 segment_temp = self.traitement_segment(liste_obstacles[i],msg)
