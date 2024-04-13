@@ -188,8 +188,9 @@ class node_cluster(Node):
                 coordonnee_plante.append(self.coordonnee_cercle(liste_obstacles[i], msg))
                 radius_plante.append(taille_obstacle*np.sqrt(3)/3)
                 point_milieu = int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]
-                theta_plante.append(self.rotation_correction*(point_milieu*delta_theta)+theta_min)
-                #if self.place == "haut":
+                theta_plante.append((self.rotation_correction*(point_milieu*delta_theta)+theta_min)%(2*np.pi)+self.angle_correction) 
+                #if self.place == "bas":
+                #    self.get_logger().info(f'Angle {(self.rotation_correction*(point_milieu*delta_theta)+theta_min)%(2*np.pi)-np.pi/3}')
                 #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[-1]}')
                 #    self.get_logger().info(f'Distance: {msg.ranges[int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]]}')
                 #    self.get_logger().info(f'Angle: {int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]}')
