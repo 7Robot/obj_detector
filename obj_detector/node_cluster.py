@@ -149,6 +149,7 @@ class node_cluster(Node):
         coordonnee_obstacle = []
         coordonnee_plante = []
         radius_plante = []
+        theta_plante = []
         coordonnee_segment = [] 
         taille_obstacle = []
         coordonnee_mesure = []
@@ -186,7 +187,8 @@ class node_cluster(Node):
             if taille_obstacle < self.marge :
                 coordonnee_plante.append(self.coordonnee_cercle(liste_obstacles[i], msg))
                 radius_plante.append(taille_obstacle*np.sqrt(3)/3)
-
+                point_milieu = int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]
+                theta_plante.append(self.rotation_correction*(point_milieu*delta_theta)+theta_min)
                 #if self.place == "haut":
                 #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[-1]}')
                 #    self.get_logger().info(f'Distance: {msg.ranges[int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]]}')
@@ -221,6 +223,7 @@ class node_cluster(Node):
             #if self.place == "bas":
             #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[i]}')
             circle.radius = radius_plante[i]
+            circle.theta = theta_plante[i]
             obstacle.circles.append(circle)
 
         for i in range(len(coordonnee_segment)):
