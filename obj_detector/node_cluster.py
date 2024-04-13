@@ -23,25 +23,25 @@ class node_cluster(Node):
             self.rotation_correction = 1
             self.marge = 0.15
             self.longueur_cercle = 0.05
+            self.max_distance = 3.8
         
         elif self.place == "bas":
             self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
-            self.angle_correction = np.pi/4 #-np.pi/3  # -105°
-            #self.rotation_correction = -1
-            #self.angle_correction = 0
+            self.angle_correction = -2*np.pi/3 
             self.rotation_correction = 1
             self.marge = 0.06
             self.longueur_cercle = 0.025
+            self.max_distance = 1.
 
         else :
             self.get_logger().warn(f'Mode debug activé.')
             #self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
             self.bon_point = list(range(1798))
-            
             self.angle_correction = 0
             self.rotation_correction = 1
             self.marge = 0.06
             self.longueur_cercle = 0.05
+            self.max_distance = 5
 
     def _init_parameters(self):
         self.declare_parameters(
@@ -157,7 +157,7 @@ class node_cluster(Node):
         
         for k in self.bon_point:
             try :
-                if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' or float(msg.ranges[k]) > 3.8 or float(msg.ranges[k+1]) > 3.8:
+                if str(msg.ranges[k]) == 'inf' or str(msg.ranges[k+1]) == 'inf' or float(msg.ranges[k]) > self.max_distance or float(msg.ranges[k+1]) > self.max_distance:
                     liste_obstacles.append(self.sortie_obstacle(points_obstacles, msg))
                     points_obstacles = []
                     #self.get_logger().warn(f'Value not valid: {msg.ranges[k]} or {msg.ranges[k+1]}.')
