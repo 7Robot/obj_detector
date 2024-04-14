@@ -19,7 +19,7 @@ class node_cluster(Node):
 
         if self.place == "haut":
             self.bon_point = list(range(1798))
-            self.angle_correction = np.pi/2
+            self.angle_correction = -np.pi/2
             self.rotation_correction = 1
             self.marge = 0.15
             self.longueur_cercle = 0.05
@@ -27,7 +27,7 @@ class node_cluster(Node):
         
         elif self.place == "bas":
             self.bon_point = list(range(170, 420)) + list(range(770, 1055)) + list(range(1400, 1660))
-            self.angle_correction = -np.pi/3 #-2*np.pi/3 
+            self.angle_correction = 2*np.pi/3 #-2*np.pi/3 
             self.rotation_correction = -1
             self.marge = 0.06
             self.longueur_cercle = 0.025
