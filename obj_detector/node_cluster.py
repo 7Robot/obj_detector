@@ -12,6 +12,7 @@ from cdf_msgs.msg import Obstacles, CircleObstacle, SegmentObstacle
 class node_cluster(Node):
     def __init__(self):
         super().__init__('node_cluster')
+        self.get_logger().info("Launching Node Cluster")
         self._init_parameters()
         self._init_publishers() 
         self._init_subscribers()
