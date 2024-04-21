@@ -12,7 +12,6 @@ from cdf_msgs.msg import Obstacles, CircleObstacle, SegmentObstacle
 class node_cluster(Node):
     def __init__(self):
         super().__init__('node_cluster')
-        self.get_logger().info("Launching Node Cluster")
         self._init_parameters()
         self._init_publishers() 
         self._init_subscribers()
@@ -33,6 +32,14 @@ class node_cluster(Node):
             self.marge = 0.06
             self.longueur_cercle = 0.025
             self.max_distance = 1.
+
+        elif self.place == "zone_calcul":
+            self.bon_point = list(range(0,500)) + list(range(1300,1798))
+            self.angle_correction = 0
+            self.rotation_correction = 1
+            self.marge = 0.15
+            self.longueur_cercle = 0.05
+            self.max_distance = 3.
 
         else :
             self.get_logger().warn(f'Mode debug activé.')
