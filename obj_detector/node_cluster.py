@@ -158,6 +158,7 @@ class node_cluster(Node):
         coordonnee_plante = []
         radius_plante = []
         theta_plante = []
+        index_plante = []
         coordonnee_segment = [] 
         taille_obstacle = []
         coordonnee_mesure = []
@@ -196,7 +197,8 @@ class node_cluster(Node):
                 coordonnee_plante.append(self.coordonnee_cercle(liste_obstacles[i], msg))
                 radius_plante.append(taille_obstacle*np.sqrt(3)/3)
                 point_milieu = int((liste_obstacles[i][1]-liste_obstacles[i][0])/2)+liste_obstacles[i][0]
-                theta_plante.append((self.rotation_correction*(point_milieu*delta_theta)+theta_min)%(2*np.pi)+self.angle_correction) 
+                theta_plante.append((self.rotation_correction*(point_milieu*delta_theta)+theta_min)%(2*np.pi)+self.angle_correction)
+                index_plante.append(point_milieu) 
                 #if self.place == "bas":
                 #    self.get_logger().info(f'Angle {(self.rotation_correction*(point_milieu*delta_theta)+theta_min)%(2*np.pi)-np.pi/3}')
                 #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[-1]}')
@@ -233,6 +235,7 @@ class node_cluster(Node):
             #    self.get_logger().info(f'Plante détectée: {coordonnee_plante[i]}')
             circle.radius = radius_plante[i]
             circle.theta = theta_plante[i]
+            circle.index_point = index_plante[i]
             obstacle.circles.append(circle)
 
         for i in range(len(coordonnee_segment)):
